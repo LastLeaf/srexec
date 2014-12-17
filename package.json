@@ -1,0 +1,11 @@
+{
+	"name": "sruncer",
+	"version": "0.0.1",
+	"engines": { "node": ">=0.10.0" },
+	"dependencies": {
+		"express": "^4.10.1",
+		"compression": "^1.2.0"
+	},
+	"author": "LastLeaf <bqfu@163.com> http://lastleaf.me",
+	"contributors": []
+}
