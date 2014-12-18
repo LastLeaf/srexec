@@ -9,6 +9,7 @@ const int32_t ERR_MAX = 1024;
 
 struct RunData {
 	// request part
+	char id[FILENAME_MAX+1];
 	char chroot[FILENAME_MAX+1];
 	char workingDir[FILENAME_MAX+1];
 	char user[USERNAME_MAX+1];
@@ -22,7 +23,6 @@ struct RunData {
 	int32_t memLimit;
 	int32_t totalTimeLimit;
 	int32_t fileSizeLimit;
-	char lxcConfigFile[FILENAME_MAX+1];
 	// result part
 	Persistent<Function> callback;
 	char err[ERR_MAX];
@@ -78,7 +78,10 @@ Handle<Value> runStart(const Arguments& args) {
 	// get options
 	Local<Object> options = args[0]->ToObject();
 	RunData* runData = new RunData();
-	Local<Value> str = options->Get( String::NewSymbol("chroot") );
+	Local<Value> str = options->Get( String::NewSymbol("id") );
+	if(str->IsString()) str->ToString()->WriteUtf8(runData->id, FILENAME_MAX);
+	else runData->id[0] = '\0';
+	str = options->Get( String::NewSymbol("chroot") );
 	if(str->IsString()) str->ToString()->WriteUtf8(runData->chroot, FILENAME_MAX);
 	else runData->chroot[0] = '\0';
 	str = options->Get( String::NewSymbol("workingDir") );
@@ -103,9 +106,6 @@ Handle<Value> runStart(const Arguments& args) {
 	runData->memLimit = options->Get( String::NewSymbol("memLimit") )->ToInteger()->Value();
 	runData->totalTimeLimit = options->Get( String::NewSymbol("totalTimeLimit") )->ToInteger()->Value();
 	runData->fileSizeLimit = options->Get( String::NewSymbol("fileSizeLimit") )->ToInteger()->Value();
-	str = options->Get( String::NewSymbol("lxcConfigFile") );
-	if(str->IsString()) str->ToString()->WriteUtf8(runData->lxcConfigFile, FILENAME_MAX);
-	else runData->lxcConfigFile[0] = '\0';
 
 	// read argc and argv
 	Local<Object> arr = options->Get( String::NewSymbol("argv") )->ToObject();

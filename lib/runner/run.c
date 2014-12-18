@@ -8,7 +8,6 @@
 #include <pwd.h>
 #include <grp.h>
 #include <errno.h>
-#include <lxc/lxccontainer.h>
 
 const char* childProcessErr[16] = {
 	"",
@@ -31,10 +30,10 @@ const char* childProcessErr[16] = {
 
 void childProcess(RunData* runData){
 	char* argv[ARGV_MAX+1];
-	struct lxc_container* container;
+	struct cgroup* cg;
 	struct passwd* pwd;
 	struct group* gr;
-
+/*
 	// chroot
 	if(runData->chroot[0] && chroot(runData->chroot)) {
 		_exit(1);
@@ -69,7 +68,7 @@ void childProcess(RunData* runData){
 	if(runData->outputFile[0] && freopen(runData->outputFile, "w", stdout) == NULL) {
 		_exit(5);
 	}
-
+*/
 	// build argv array
 	for(int i=0; i<runData->argc; i++) {
 		argv[i] = runData->argv[i];
@@ -79,16 +78,8 @@ void childProcess(RunData* runData){
 	// apply rlimit
 	// TODO
 
-	// call lxc
-	container = lxc_container_new("sruncer", NULL);
-	container->load_config(container, runData->lxcConfigFile);
-	//container->set_config_item(container, "lxc.console.logfile", );
-	if( container->create(container, NULL, NULL, NULL, 0, NULL) || container->start(container, 1, argv) ){
-		_exit(6);
-	}
-	container->wait(container, "STOPPED", runData->totalTimeLimit);
-	container->stop(container);
-	container->destroy(container);
+	// create new cgroup
+	// TODO
 
 	_exit(0);
 }
