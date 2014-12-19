@@ -33,6 +33,7 @@ struct RunData {
 };
 
 extern "C" {
+	#include "utils.c"
 	#include "run.c"
 }
 
@@ -140,6 +141,7 @@ Handle<Value> runStart(const Arguments& args) {
 }
 
 void RegisterModule(Handle<Object> target) {
+	initCgroup();
 	target->Set(String::NewSymbol("run"), FunctionTemplate::New(runStart)->GetFunction());
 }
 

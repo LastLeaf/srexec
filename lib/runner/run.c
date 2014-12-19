@@ -110,4 +110,4 @@ void run(RunData* runData){
 		snprintf(runData->err, ERR_MAX, "%s", childProcessErr[code]);
 		return;
 	}
-};
+}
