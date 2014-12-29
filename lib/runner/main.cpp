@@ -25,8 +25,9 @@ struct RunData {
 	int32_t fileSizeLimit;
 	// result part
 	Persistent<Function> callback;
-	char err[ERR_MAX];
-	int32_t code;
+	int32_t err;
+	char error[ERR_MAX];
+	int32_t status;
 	int32_t signal;
 	int32_t time;
 	int32_t memory;
@@ -44,13 +45,13 @@ void runEnd(uv_work_t* req){
 	// generate results
 	const unsigned argc = 2;
 	Local<Value> err;
-	if(runData->err[0]) {
-		err = Local<Value>::New( Exception::Error(String::New(runData->err)) );
+	if(runData->error[0]) {
+		err = Local<Value>::New( Exception::Error(String::New(runData->error)) );
 	} else {
 		err = Local<Value>::New( Null() );
 	}
 	Local<Object> details = Object::New();
-	details->Set( String::NewSymbol("code"), Integer::New(runData->code) );
+	details->Set( String::NewSymbol("status"), Integer::New(runData->status) );
 	details->Set( String::NewSymbol("signal"), Integer::New(runData->signal) );
 	details->Set( String::NewSymbol("time"), Integer::New(runData->time) );
 	details->Set( String::NewSymbol("memory"), Integer::New(runData->memory) );
@@ -112,14 +113,17 @@ Handle<Value> runStart(const Arguments& args) {
 	Local<Object> arr = options->Get( String::NewSymbol("argv") )->ToObject();
 	int32_t i = 0;
 	for(; i<ARGV_MAX; i++) {
-		arr->Get(i)->ToString()->WriteUtf8(runData->argv[i], FILENAME_MAX);
+		Local<Value> arg = arr->Get(i);
+		if(arg->IsUndefined()) break;
+		arg->ToString()->WriteUtf8(runData->argv[i], FILENAME_MAX);
 	}
 	runData->argc = i;
 
 	// set default
 	runData->callback = Persistent<Function>::New(callback);
-	runData->err[0] = '\0';
-	runData->code = 0;
+	runData->err = 0;
+	runData->error[0] = '\0';
+	runData->status = 0;
 	runData->signal = 0;
 	runData->time = 0;
 	runData->memory = 0;
