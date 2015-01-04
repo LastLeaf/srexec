@@ -52,7 +52,7 @@ int waitpidTimeout(int pid, int* status, int timeMs) {
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGCHLD);
 	int r = sigtimedwait(&mask, NULL, &ts);
-	if(r < 0) {
+	if(r < 0 && errno != EAGAIN) {
 		return r;
 	}
 	r = waitpid(pid, status, WNOHANG);
@@ -106,17 +106,6 @@ void childProcess(RunData* runData, RunResult* runResult){
 		}
 	}*/
 
-	// redirect std
-	if(runData->errFile[0] && freopen(runData->errFile, "w", stderr) == NULL) {
-		_exit(5);
-	}
-	if(runData->inputFile[0] && freopen(runData->inputFile, "r", stdin) == NULL) {
-		_exit(5);
-	}
-	if(runData->outputFile[0] && freopen(runData->outputFile, "w", stdout) == NULL) {
-		_exit(5);
-	}
-
 	// apply rlimit
 	// TODO
 
@@ -140,6 +129,20 @@ void childProcess(RunData* runData, RunResult* runResult){
 		// process to execve
 		close(childPipeFd[0]);
 
+		// redirect std
+		if(runData->errFile[0] && freopen(runData->errFile, "w", stderr) == NULL) {
+			_exit(5);
+		}
+		if(runData->inputFile[0] && freopen(runData->inputFile, "r", stdin) == NULL) {
+			_exit(5);
+		}
+		if(runData->outputFile[0] && freopen(runData->outputFile, "w", stdout) == NULL) {
+			_exit(5);
+		}
+
+		// put into cgroup
+
+
 		// execve
 		execvp(argv[0], argv);
 		childErrno = 2;
@@ -160,6 +163,8 @@ void childProcess(RunData* runData, RunResult* runResult){
 	if(r == 0) _exit(8);
 	if(WIFSIGNALED(status)) runResult->signal = WTERMSIG(status);
 	if(WIFEXITED(status)) runResult->status = WEXITSTATUS(status);
+
+	//
 }
 
 // create child process

@@ -4,4 +4,4 @@ Sruncer hosts a REST server as an online judge backend. It accepts input files, 
 
 ## Development Status ##
 
-Early development. Do not use it in productional environment.
+Not developing, currently.

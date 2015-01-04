@@ -145,7 +145,7 @@ Handle<Value> runStart(const Arguments& args) {
 }
 
 void RegisterModule(Handle<Object> target) {
-	initCgroup();
+	cgroupInit();
 	target->Set(String::NewSymbol("run"), FunctionTemplate::New(runStart)->GetFunction());
 }
 
