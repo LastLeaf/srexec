@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 struct cgroupPrefix_t {
 	int ready;
@@ -26,7 +27,7 @@ int cgroupDestroyType(const char* cgid, const char* prefix){
 	snprintf(path, sizeof(path), "%s/%s/tasks", prefix, cgid);
 	FILE* fp = fopen(path, "re");
 	if(fp == NULL) return -1;
-	while(fscanf(fp, "%d", pid) != EOF) {
+	while(fscanf(fp, "%d", &pid) != EOF) {
 		kill(pid, SIGKILL);
 	}
 	fclose(fp);

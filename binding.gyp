@@ -1,7 +1,7 @@
 {
 	"targets": [
 		{
-			"target_name": "sruncer_runner",
+			"target_name": "srexec_runner",
 			"sources": [ "lib/runner/main.cpp" ]
 		}
 	]

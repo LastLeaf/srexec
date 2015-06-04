@@ -149,4 +149,4 @@ void RegisterModule(Handle<Object> target) {
 	target->Set(String::NewSymbol("run"), FunctionTemplate::New(runStart)->GetFunction());
 }
 
-NODE_MODULE(sruncer_runner, RegisterModule);
+NODE_MODULE(srexec_runner, RegisterModule);
