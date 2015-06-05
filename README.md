@@ -1,6 +1,10 @@
 # Srexec: source code execution backend #
 
-It hosts a REST server, accepting files and execution requests. It executes untrusted code in protected environments.
+This is a node module designed for execution simple and untrusted code.
+It executes code in limited environments, running in linux with node.js.
+
+The untrusted can read system files, but can write almost nothing.
+Some extra limits can also be applied.
 
 It could be used as a judge backend for ACM-ICPC-style contests.
 

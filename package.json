@@ -1,12 +1,20 @@
 {
 	"name": "srexec",
+	"description": "Srexec: simple code execution backend. Designed for untrusted code execution in linux.",
 	"version": "0.0.1",
+	"license": "MIT",
 	"engines": { "node": ">=0.10.0" },
 	"dependencies": {
-		"express": "^4.10.1",
-		"compression": "^1.2.0",
-		"su-exec": "~0.1.1"
+		"su-exec": "~0.1.2"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/LastLeaf/srexec"
+	},
+	"bugs": {
+		"url": "https://github.com/LastLeaf/srexec/issues"
+	},
+	"homepage": "https://github.com/LastLeaf/srexec",
 	"author": "LastLeaf <bqfu@163.com> http://lastleaf.me",
 	"contributors": []
 }
