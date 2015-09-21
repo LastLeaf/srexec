@@ -1,13 +1,10 @@
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-
 struct cgroupPrefix_t {
 	int ready;
 	char cpuset[FILENAME_MAX + 1];
 	char cpuacct[FILENAME_MAX + 1];
 	char memory[FILENAME_MAX + 1];
 	char freezer[FILENAME_MAX + 1];
+	char devices[FILENAME_MAX + 1];
 };
 struct cgroupPrefix_t cgroupPrefix;
 
@@ -82,6 +79,7 @@ int cgroupInit(){
 	strcpy(cgroupPrefix.cpuacct, "");
 	strcpy(cgroupPrefix.memory, "");
 	strcpy(cgroupPrefix.freezer, "");
+	strcpy(cgroupPrefix.devices, "");
 
 	// read /proc/mounts
 	fp = fopen("/proc/mounts", "r");
@@ -99,10 +97,11 @@ int cgroupInit(){
 			if(strstr(sp, ",cpuacct,")) strcpy(cgroupPrefix.cpuacct, s+7);
 			if(strstr(sp, ",memory,")) strcpy(cgroupPrefix.memory, s+7);
 			if(strstr(sp, ",freezer,")) strcpy(cgroupPrefix.freezer, s+7);
+			if(strstr(sp, ",devices,")) strcpy(cgroupPrefix.devices, s+7);
 		}
 		fclose(fp);
 	}
-	if(!cgroupPrefix.cpuset[0] || !cgroupPrefix.cpuacct[0] || !cgroupPrefix.memory[0] || !cgroupPrefix.freezer[0])
+	if(!cgroupPrefix.cpuset[0] || !cgroupPrefix.cpuacct[0] || !cgroupPrefix.memory[0] || !cgroupPrefix.freezer[0] || !cgroupPrefix.devices[0])
 		return -1;
 
 	// read /proc/self/cgroup
@@ -127,6 +126,8 @@ int cgroupInit(){
 				strncat(cgroupPrefix.memory, sp, FILENAME_MAX - strlen(cgroupPrefix.memory));
 			if(strstr(s, "freezer:"))
 				strncat(cgroupPrefix.freezer, sp, FILENAME_MAX - strlen(cgroupPrefix.freezer));
+			if(strstr(s, "devices:"))
+				strncat(cgroupPrefix.devices, sp, FILENAME_MAX - strlen(cgroupPrefix.devices));
 		}
 		fclose(fp);
 	}

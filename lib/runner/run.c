@@ -1,16 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <errno.h>
-#include <sys/select.h>
-#include <signal.h>
-
 const char* childProcessErr[16] = {
 	"",
 	"Service Unavailable",
@@ -30,12 +17,12 @@ const char* childProcessErr[16] = {
 	""
 };
 
-struct RunResult {
-	int32_t status;
-	int32_t signal;
-	int32_t time;
-	int32_t memory;
-};
+typedef struct _RunResult {
+	int status;
+	int signal;
+	int time;
+	int memory;
+} RunResult;
 
 // waitpid in timeout
 int waitpidTimeoutInit() {
@@ -73,7 +60,8 @@ void childProcess(RunData* runData, RunResult* runResult){
 	struct sigaction act;
 	act.sa_handler = SIG_DFL;
 	act.sa_flags = SA_NOCLDSTOP;
-	for(int i=1; i<32; i++) {
+	int i;
+	for(i=1; i<32; i++) {
 		sigaction(i, &act, NULL);
 	}
 	// close fds
@@ -113,8 +101,8 @@ void childProcess(RunData* runData, RunResult* runResult){
 	// TODO
 
 	// build argv array for child
-	char* argv[ARGV_MAX+1];
-	for(int i=0; i<runData->argc; i++) {
+	char* argv[ARG_MAX+1];
+	for(i=0; i<runData->argc; i++) {
 		argv[i] = runData->argv[i];
 	}
 	argv[runData->argc] = NULL;
@@ -169,8 +157,8 @@ void childProcess(RunData* runData, RunResult* runResult){
 
 // create child process
 void run(RunData* runData){
-	int32_t r = 0;
-	struct RunResult runResult;
+	int r = 0;
+	RunResult runResult;
 
 	// fork with pipe
 	int pipeFd[2];
@@ -203,7 +191,7 @@ void run(RunData* runData){
 		snprintf(runData->error, ERR_MAX, "Service Unavailable");
 		return;
 	}
-	int32_t err = (WIFEXITED(r) ? WEXITSTATUS(r) : 16);
+	int err = (WIFEXITED(r) ? WEXITSTATUS(r) : 16);
 	if(err) {
 		close(pipeFd[0]);
 		if(err >= 16) err = 1;
