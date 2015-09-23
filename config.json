@@ -1,6 +1,0 @@
-{
-	"httpd": {
-		"uid": "nobody",
-		"gid": "nogroup"
-	}
-}

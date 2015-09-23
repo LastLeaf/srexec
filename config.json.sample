@@ -1,0 +1,9 @@
+{
+	"httpd": {
+		"uid": "nobody",
+		"gid": "nogroup",
+		"host": "127.0.0.1",
+		"port": 1180,
+		"htpasswd": "./config.htpasswd"
+	}
+}

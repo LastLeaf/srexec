@@ -1,20 +1,26 @@
 {
-	"name": "srexec",
-	"description": "Srexec: simple code execution backend. Designed for untrusted code execution in linux.",
-	"version": "0.0.1",
-	"license": "MIT",
-	"engines": { "node": ">=0.10.0" },
-	"dependencies": {
-		"su-exec": "~0.1.2"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/LastLeaf/srexec"
-	},
-	"bugs": {
-		"url": "https://github.com/LastLeaf/srexec/issues"
-	},
-	"homepage": "https://github.com/LastLeaf/srexec",
-	"author": "LastLeaf <bqfu@163.com> http://lastleaf.me",
-	"contributors": []
+  "name": "srexec",
+  "description": "Srexec: simple code execution backend. Designed for untrusted code execution in linux.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "compression": "^1.5.2",
+    "express": "^4.13.3",
+    "fs-extra": "^0.24.0",
+    "http-auth": "^2.2.8",
+    "su-exec": "~0.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LastLeaf/srexec"
+  },
+  "bugs": {
+    "url": "https://github.com/LastLeaf/srexec/issues"
+  },
+  "homepage": "https://github.com/LastLeaf/srexec",
+  "author": "LastLeaf <bqfu@163.com> http://lastleaf.me",
+  "contributors": []
 }

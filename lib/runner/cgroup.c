@@ -9,12 +9,17 @@ struct cgroupPrefix_t {
 struct cgroupPrefix_t cgroupPrefix;
 
 // cgroup settings helper
-int cgroupGet(const char* cgid, const char* type, const char* key, char* value){
-	//if(strcmp(type, cpu))
-	return 0;
-}
-int cgroupSet(const char* cgid, const char* type, const char* key, const char* value){
-	return 0;
+FILE* cgroupGetFile(const char* cgid, const char* type, const char* key, const char* rw){
+	const char* prefix;
+	if(!strcmp(type, "cpuset")) prefix = cgroupPrefix.cpuset;
+	else if(!strcmp(type, "cpuacct")) prefix = cgroupPrefix.cpuacct;
+	else if(!strcmp(type, "memory")) prefix = cgroupPrefix.memory;
+	else if(!strcmp(type, "freezer")) prefix = cgroupPrefix.freezer;
+	else if(!strcmp(type, "devices")) prefix = cgroupPrefix.devices;
+	else return NULL;
+	char path[FILENAME_MAX + 1];
+	snprintf(path, sizeof(path), "%s/%s/%s", prefix, cgid, key);
+	return fopen(path, rw);
 }
 
 // cgroup destroy with process killed
@@ -23,13 +28,16 @@ int cgroupDestroyType(const char* cgid, const char* prefix){
 	int pid;
 	snprintf(path, sizeof(path), "%s/%s/tasks", prefix, cgid);
 	FILE* fp = fopen(path, "re");
-	if(fp == NULL) return -1;
+	if(fp == NULL) return 1;
 	while(fscanf(fp, "%d", &pid) != EOF) {
 		kill(pid, SIGKILL);
 	}
 	fclose(fp);
 	snprintf(path, sizeof(path), "%s/%s", prefix, cgid);
-	if(rmdir(path)) return -1;
+	int retries = 5;
+	while(rmdir(path) && retries) {
+		sleep(1);
+	}
 	return 0;
 }
 int cgroupDestroy(const char* cgid){
@@ -38,6 +46,7 @@ int cgroupDestroy(const char* cgid){
 	if(cgroupDestroyType(cgid, cgroupPrefix.cpuacct)) ret = -1;
 	if(cgroupDestroyType(cgid, cgroupPrefix.memory)) ret = -1;
 	if(cgroupDestroyType(cgid, cgroupPrefix.freezer)) ret = -1;
+	if(cgroupDestroyType(cgid, cgroupPrefix.devices)) ret = -1;
 	return ret;
 }
 
@@ -64,6 +73,7 @@ int cgroupCreate(const char* cgid){
 	if(cgroupCreateType(cgid, cgroupPrefix.cpuacct)) return -1;
 	if(cgroupCreateType(cgid, cgroupPrefix.memory)) return -1;
 	if(cgroupCreateType(cgid, cgroupPrefix.freezer)) return -1;
+	if(cgroupCreateType(cgid, cgroupPrefix.devices)) return -1;
 	return 0;
 }
 

@@ -13,9 +13,13 @@
 #include <grp.h>
 #include <errno.h>
 #include <sys/select.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <signal.h>
 
 #define ERR_MAX 255
+#define TASK_MAX 0
+#define FILE_MAX 256
 
 typedef struct _RunData {
 	// request part
@@ -29,24 +33,27 @@ typedef struct _RunData {
 	char* inputFile;
 	char* outputFile;
 	char* errFile;
+	char* logFile;
+	char* cpuset;
 	int timeLimit;
 	int memLimit;
 	int totalTimeLimit;
 	int fileSizeLimit;
-	// result part
-	int err;
-	char error[ERR_MAX+1];
+} RunData;
+
+typedef struct _RunResult {
 	int status;
 	int signal;
 	int time;
-	int memory;
-} RunData;
+	int mem;
+} RunResult;
 
 #include "cgroup.c"
 #include "run.c"
 
 int main(int argc, char* argv[]){
 	RunData runData;
+	RunResult runResult;
 
 	runData.id = argv[1];
 	runData.chroot = argv[2];
@@ -56,17 +63,18 @@ int main(int argc, char* argv[]){
 	runData.inputFile = argv[6];
 	runData.outputFile = argv[7];
 	runData.errFile = argv[8];
-	sscanf(argv[9], "%d", &runData.timeLimit);
-	sscanf(argv[10], "%d", &runData.totalTimeLimit);
-	sscanf(argv[11], "%d", &runData.memLimit);
-	sscanf(argv[12], "%d", &runData.fileSizeLimit);
-	runData.argv = argv + 13;
-	runData.argc = argc - 13;
+	runData.logFile = argv[9];
+	runData.cpuset = argv[10];
+	runData.timeLimit = runData.totalTimeLimit = runData.memLimit = runData.fileSizeLimit = 0;
+	sscanf(argv[11], "%d", &runData.timeLimit);
+	sscanf(argv[12], "%d", &runData.totalTimeLimit);
+	sscanf(argv[13], "%d", &runData.memLimit);
+	sscanf(argv[14], "%d", &runData.fileSizeLimit);
+	runData.argv = argv + 15;
+	runData.argc = argc - 15;
 
 	if(cgroupInit()) return -1;
-	cgroupCreate(runData.id);
-	run(&runData);
-	cgroupDestroy(runData.id);
+	run(&runData, &runResult);
 
 	return 0;
 }
