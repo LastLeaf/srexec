@@ -3,6 +3,11 @@
 /env
 /req
 /mnt
+/tmp
+/test/env
+/test/req
+/test/mnt
+/test/tmp
 /npm-debug.log
 /config.json
 /config.htpasswd
