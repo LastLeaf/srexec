@@ -1,5 +1,9 @@
 'use strict';
 
+var cases = [
+	'storage',
+];
+
 if(process.getuid()) {
 	console.error('This script should be run as root.');
 	process.exit();
@@ -14,13 +18,12 @@ var assert = require('assert');
 describe('start server', function(){
 	before(function(done){
 		// clean dirs
-		fs.removeSync('env');
 		fs.removeSync('mnt');
 		fs.removeSync('req');
 		fs.removeSync('tmp');
-		// start server
+		// waiting start server
 		require('../index.js');
-		done();
+		setTimeout(done, 1000);
 	});
 	it('initialize basic dirs with correct permissions', function(done){
 		var stat = fs.statSync('tmp');
@@ -39,4 +42,8 @@ describe('start server', function(){
 			done();
 		}).on('error', done);
 	});
+});
+
+cases.forEach(function(file){
+	require('./cases/' + file + '.js');
 });

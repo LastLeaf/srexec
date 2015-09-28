@@ -8,7 +8,9 @@
 		"uploadLimit": 1048576
 	},
 	"runner": {
+		"parellel": 4,
 		"dir": ".",
 		"queueLength": 100
-	}
+	},
+	"environment": {}
 }

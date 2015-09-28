@@ -7,7 +7,6 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "body-parser": "^1.14.0",
     "compression": "^1.5.2",
     "express": "^4.13.3",
     "fs-extra": "^0.24.0",
@@ -15,11 +14,13 @@
     "su-exec": "~0.1.4"
   },
   "devDependencies": {
-    "mocha": "^2.3.3"
+    "mocha": "^2.3.3",
+    "istanbul": "~0.3.21"
   },
   "scripts": {
     "start": "node .",
-    "test": "sudo mocha"
+    "test": "sudo mocha",
+    "coverage": "sudo istanbul cover _mocha -- -R spec"
   },
   "repository": {
     "type": "git",
