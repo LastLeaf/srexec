@@ -5,12 +5,13 @@
 		"host": "127.0.0.1",
 		"port": 1180,
 		"htpasswd": "./config.htpasswd",
-		"uploadLimit": 1048576
+		"postBodyLimit": 65536,
+		"putBodyLimit": 10485760
 	},
 	"runner": {
 		"parellel": 4,
 		"dir": ".",
-		"queueLength": 100
+		"queueLength": 1
 	},
 	"environment": {}
 }

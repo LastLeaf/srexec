@@ -6,6 +6,23 @@ var http = require('http');
 var url = require('url');
 
 describe('visit storage', function(){
+	it('put file and exceed PUT body limit', function(done){
+		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file');
+		urlObj.method = 'PUT';
+		var req = http.request(urlObj, function(res){
+			assert.equal(res.statusCode, 413);
+			fs.stat('mnt/test_dir/test_file', function(err, stat){
+				assert.notEqual(err, null);
+				fs.readdir('tmp', function(err, files){
+					assert.equal(err, null);
+					assert.equal(files.length, 0);
+					done();
+				});
+			});
+		}).on('error', done);
+		req.write(new Buffer(10485761));
+		req.end();
+	});
 	it('put file', function(done){
 		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file');
 		urlObj.method = 'PUT';
@@ -35,6 +52,15 @@ describe('visit storage', function(){
 				assert.equal(str, 'test file content');
 				done();
 			});
+		}).on('error', done);
+		req.end();
+	});
+	it('get file that does not exist', function(done){
+		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file_2');
+		urlObj.method = 'GET';
+		var req = http.request(urlObj, function(res){
+			assert.equal(res.statusCode, 404);
+			done();
 		}).on('error', done);
 		req.end();
 	});
