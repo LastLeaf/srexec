@@ -6,12 +6,19 @@
 		"port": 1180,
 		"htpasswd": "./config.htpasswd",
 		"postBodyLimit": 65536,
-		"putBodyLimit": 10485760
+		"putBodyLimit": 16777216
 	},
 	"runner": {
 		"parellel": -1,
-		"dir": ".",
-		"queueLength": 100
+		"queueLength": 100,
+		"uid": "nobody",
+		"gid": "nogroup"
+	},
+	"hardLimit": {
+		"time": 3600000,
+		"totalTime": 3600000,
+		"mem": 2147483647,
+		"fileSize": 16777216
 	},
 	"environment": {}
 }

@@ -236,12 +236,12 @@ int execChild(RunData* runData, RunResult* runResult){
 }
 
 void run(RunData* runData, RunResult* runResult){
-	FILE* logFile = fopen(runData->logFile, "w");
+	FILE* logFile = fopen(runData->logFile, "a");
 	int execResult = execChild(runData, runResult);
 	if(execResult) {
-		fprintf(logFile, "{\"err\":%d,\"message\":\"%s\",\"status\":%d,\"signal\":%d,\"time\":%d,\"mem\":%d}", execResult, childProcessErr[execResult], runResult->status, runResult->signal, runResult->time, runResult->mem);
+		fprintf(logFile, "{\"err\":%d,\"message\":\"%s\",\"status\":%d,\"signal\":%d,\"time\":%d,\"mem\":%d}\n", execResult, childProcessErr[execResult], runResult->status, runResult->signal, runResult->time, runResult->mem);
 	} else {
-		fprintf(logFile, "{\"status\":%d,\"signal\":%d,\"time\":%d,\"mem\":%d}", runResult->status, runResult->signal, runResult->time, runResult->mem);
+		fprintf(logFile, "{\"status\":%d,\"signal\":%d,\"time\":%d,\"mem\":%d}\n", runResult->status, runResult->signal, runResult->time, runResult->mem);
 	}
 	fclose(logFile);
 }
