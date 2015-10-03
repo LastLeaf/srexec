@@ -3,6 +3,7 @@
 var cases = [
 	'storage',
 	'queue',
+	'exec',
 ];
 
 if(process.getuid()) {
