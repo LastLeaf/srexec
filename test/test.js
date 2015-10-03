@@ -32,6 +32,10 @@ describe('start server', function(){
 		assert.equal(stat.mode, parseInt('40777', 8));
 		done();
 	});
+	it('initialize cgroups', function(done){
+		fs.statSync('cgroup/tasks');
+		done();
+	});
 	it('visit with wrong password', function(done){
 		http.get('http://a:b@127.0.0.1:1180/', function(res){
 			assert.equal(res.statusCode, 401);
