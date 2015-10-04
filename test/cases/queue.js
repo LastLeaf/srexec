@@ -68,12 +68,15 @@ describe('pipeline queue', function(){
 		});
 	});
 	it('delete file', function(done){
-		httpReq('DELETE', 'http://a:a@127.0.0.1:1180/~/0', undefined, done, function(res){
-			assert.equal(res.statusCode, 200);
-			fs.stat('req/1', function(err, stat){
-				assert.notEqual(err, null);
-				done();
+		setTimeout(function(){
+			fs.statSync('req/0');
+			httpReq('DELETE', 'http://a:a@127.0.0.1:1180/~/0', undefined, done, function(res){
+				assert.equal(res.statusCode, 200);
+				fs.stat('req/0', function(err, stat){
+					assert.notEqual(err, null);
+					done();
+				});
 			});
-		});
+		}, 200);
 	});
 });

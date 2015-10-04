@@ -77,6 +77,7 @@ int applyLimits(RunData* runData){
 	if(fp == NULL) return -1;
 	fprintf(fp, "a 1:* rw");
 	fclose(fp);
+	// TODO limit network
 	// set limit: memory
 	if(runData->memLimit) {
 		rlim.rlim_cur = rlim.rlim_max = runData->memLimit;
@@ -235,7 +236,7 @@ int execChild(RunData* runData, RunResult* runResult){
 	return 0;
 }
 
-void run(RunData* runData, RunResult* runResult){
+int run(RunData* runData, RunResult* runResult){
 	FILE* logFile = fopen(runData->logFile, "a");
 	int execResult = execChild(runData, runResult);
 	if(execResult) {
@@ -244,4 +245,8 @@ void run(RunData* runData, RunResult* runResult){
 		fprintf(logFile, "{\"status\":%d,\"signal\":%d,\"time\":%d,\"mem\":%d}\n", runResult->status, runResult->signal, runResult->time, runResult->mem);
 	}
 	fclose(logFile);
+	if(execResult) return 1;
+	if(runResult->signal) return 2;
+	if(runResult->status) return 3;
+	return 0;
 }

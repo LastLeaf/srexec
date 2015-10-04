@@ -74,7 +74,5 @@ int main(int argc, char* argv[]){
 	runData.argv = argv + 16;
 	runData.argc = argc - 16;
 
-	run(&runData, &runResult);
-
-	return 0;
+	return run(&runData, &runResult);
 }

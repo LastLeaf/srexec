@@ -11,7 +11,7 @@
     "express": "^4.13.3",
     "fs-extra": "^0.24.0",
     "http-auth": "^2.2.8",
-    "su-exec": "~0.1.4"
+    "su-exec": "~0.1.5"
   },
   "devDependencies": {
     "mocha": "^2.3.3",
