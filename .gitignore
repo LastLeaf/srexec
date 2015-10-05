@@ -1,11 +1,9 @@
 /build
 /node_modules
-/cgroup
 /env
 /req
 /mnt
 /tmp
-/test/cgroup
 /test/env
 /test/req
 /test/mnt

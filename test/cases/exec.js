@@ -23,22 +23,25 @@ var httpReq = function(method, reqUrl, content, done, cb){
 };
 
 describe('common tasks', function(){
-	it('echo', function(done){
+	before(function(done){
 		setTimeout(function(){
-			var pipeline = [
-				{execPath: 'echo', args: ['file content...'], stdout: 'echo'},
-			];
-			httpReq('POST', 'http://a:a@127.0.0.1:1180/~/echo', JSON.stringify(pipeline), done, function(res){
-				assert.equal(res.statusCode, 200);
-				setTimeout(function(){
-					httpReq('GET', 'http://a:a@127.0.0.1:1180/~/echo', undefined, done, function(res){
-						assert.equal(res.statusCode, 200);
-						assert.equal( fs.readFileSync('mnt/echo', {encoding: 'utf8'}), 'file content...\n' );
-						done();
-					});
-				}, 200);
-			});
+			done();
 		}, 200);
+	});
+	it('echo', function(done){
+		var pipeline = [
+			{execPath: 'echo', args: ['file content...'], stdout: 'echo'},
+		];
+		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/echo', JSON.stringify(pipeline), done, function(res){
+			assert.equal(res.statusCode, 200);
+			setTimeout(function(){
+				httpReq('GET', 'http://a:a@127.0.0.1:1180/~/echo', undefined, done, function(res){
+					assert.equal(res.statusCode, 200);
+					assert.equal( fs.readFileSync('mnt/echo', {encoding: 'utf8'}), 'file content...\n' );
+					done();
+				});
+			}, 100);
+		});
 	});
 	it('cat from stdin to stdout', function(done){
 		var pipeline = [
@@ -53,7 +56,7 @@ describe('common tasks', function(){
 					assert.equal( fs.readFileSync('mnt/cat', {encoding: 'utf8'}), 'file content...\n' );
 					done();
 				});
-			}, 200);
+			}, 100);
 		});
 	});
 	it('complex pipeline', function(done){
@@ -72,7 +75,7 @@ describe('common tasks', function(){
 					assert.equal( fs.readFileSync('mnt/complex-2', {encoding: 'utf8'}), 'file content...\n' );
 					done();
 				});
-			}, 200);
+			}, 100);
 		});
 	});
 	it('exit codes and force continue', function(done){
@@ -89,10 +92,10 @@ describe('common tasks', function(){
 					assert.equal(res.body.match(/\n/g).length, 2);
 					done();
 				});
-			}, 200);
+			}, 100);
 		});
 	});
-	it('gcc', function(done){
+	it('send code, compile, and execute', function(done){
 		var pipeline = [
 			{execPath: 'echo', args: ['#include <stdio.h>\nint main(){ printf("Hello world!"); return 0; }'], stdout: '/tmp/code.c'},
 			{execPath: 'gcc', args: ['-o', '/tmp/code', '/tmp/code.c'], stdin: '/dev/null', stdout: '/dev/null'},
@@ -106,7 +109,7 @@ describe('common tasks', function(){
 					assert.equal( fs.readFileSync('mnt/gcc', {encoding: 'utf8'}), 'Hello world!' );
 					done();
 				});
-			}, 200);
+			}, 100);
 		});
 	});
 });

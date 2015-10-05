@@ -54,26 +54,36 @@ void returnChildError(int childPipeFd[2], int childErrno){
 int applyLimits(RunData* runData){
 	FILE* fp;
 	struct rlimit rlim;
+	// check cpuacct, memory, freezer
+	fp = cgroupGetFile(runData->id, "cpuacct", "cpuacct.usage", "r");
+	if(fp == NULL) return -1;
+	fclose(fp);
+	fp = cgroupGetFile(runData->id, "memory", "memory.max_usage_in_bytes", "r");
+	if(fp == NULL) return -1;
+	fclose(fp);
+	fp = cgroupGetFile(runData->id, "freezer", "freezer.state", "r");
+	if(fp == NULL) return -1;
+	fclose(fp);
 	// cpuset
 	if(runData->cpuset[0]) {
-		fp = cgroupGetFile(runData->id, "cpuset.cpus", "w");
+		fp = cgroupGetFile(runData->id, "cpuset", "cpuset.cpus", "w");
 		if(fp == NULL) return -1;
 		fprintf(fp, "%s", runData->cpuset);
 		fclose(fp);
 	}
 	// memory
 	if(runData->memLimit) {
-		fp = cgroupGetFile(runData->id, "memory.limit_in_bytes", "w");
+		fp = cgroupGetFile(runData->id, "memory", "memory.limit_in_bytes", "w");
 		if(fp == NULL) return -1;
 		fprintf(fp, "%d", runData->memLimit <= 2147483647 - 1048576*16 ? runData->memLimit + 1048576*16 : runData->memLimit);
 		fclose(fp);
 	}
 	// devices
-	fp = cgroupGetFile(runData->id, "devices.deny", "w");
+	fp = cgroupGetFile(runData->id, "devices", "devices.deny", "w");
 	if(fp == NULL) return -1;
 	fprintf(fp, "a");
 	fclose(fp);
-	fp = cgroupGetFile(runData->id, "devices.allow", "w");
+	fp = cgroupGetFile(runData->id, "devices", "devices.allow", "w");
 	if(fp == NULL) return -1;
 	fprintf(fp, "a 1:* rw");
 	fclose(fp);
@@ -200,7 +210,7 @@ int execChild(RunData* runData, RunResult* runResult){
 		return 1;
 	}
 	FILE* fp;
-	fp = cgroupGetFile(runData->id, "freezer.state", "w");
+	fp = cgroupGetFile(runData->id, "freezer", "freezer.state", "w");
 	if(fp != NULL) {
 		fprintf(fp, "FROZEN");
 		fclose(fp);
@@ -210,15 +220,15 @@ int execChild(RunData* runData, RunResult* runResult){
 
 	// stat cpu and mem
 	long long timeUsage, memUsage;
-	fp = cgroupGetFile(runData->id, "cpuacct.usage", "r");
+	fp = cgroupGetFile(runData->id, "cpuacct", "cpuacct.usage", "r");
 	if(fp == NULL) return -1;
 	if(fscanf(fp, "%lld", &timeUsage)) {}
 	fclose(fp);
-	fp = cgroupGetFile(runData->id, "memory.max_usage_in_bytes", "r");
+	fp = cgroupGetFile(runData->id, "memory", "memory.max_usage_in_bytes", "r");
 	if(fp == NULL) return -1;
 	if(fscanf(fp, "%lld", &memUsage)) {}
 	fclose(fp);
-	fp = cgroupGetFile(runData->id, "freezer.state", "w");
+	fp = cgroupGetFile(runData->id, "freezer", "freezer.state", "w");
 	if(fp != NULL) {
 		fprintf(fp, "THAWED");
 		fclose(fp);

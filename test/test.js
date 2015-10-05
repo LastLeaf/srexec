@@ -4,6 +4,7 @@ var cases = [
 	'storage',
 	'queue',
 	'exec',
+	'code',
 ];
 
 if(process.getuid()) {
@@ -30,10 +31,6 @@ describe('start server', function(){
 	it('initialize basic dirs with correct permissions', function(done){
 		var stat = fs.statSync('tmp');
 		assert.equal(stat.mode, parseInt('40777', 8));
-		done();
-	});
-	it('initialize cgroups', function(done){
-		fs.statSync('cgroup/tasks');
 		done();
 	});
 	it('visit with wrong password', function(done){
