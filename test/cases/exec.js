@@ -24,9 +24,10 @@ var httpReq = function(method, reqUrl, content, done, cb){
 
 describe('common tasks', function(){
 	before(function(done){
+		this.timeout(10000);
 		setTimeout(function(){
 			done();
-		}, 200);
+		}, 2000);
 	});
 	it('echo', function(done){
 		var pipeline = [
@@ -75,7 +76,7 @@ describe('common tasks', function(){
 					assert.equal( fs.readFileSync('mnt/complex-2', {encoding: 'utf8'}), 'file content...\n' );
 					done();
 				});
-			}, 100);
+			}, 300);
 		});
 	});
 	it('exit codes and force continue', function(done){
@@ -109,7 +110,7 @@ describe('common tasks', function(){
 					assert.equal( fs.readFileSync('mnt/gcc', {encoding: 'utf8'}), 'Hello world!' );
 					done();
 				});
-			}, 100);
+			}, 300);
 		});
 	});
 });
