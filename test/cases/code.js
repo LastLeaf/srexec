@@ -120,6 +120,17 @@ describe('common a+b code', function(){
 			done();
 		});
 	});
+	it('Shell', function(done){
+		var id = 'plus_sh';
+		var file = 'src.sh';
+		execPipeline(id, file, [
+			{execPath: '/bin/bash', args: ['/mnt/plus/'+file], workingDir: '/tmp', stdin: 'plus/stdin', stdout: id},
+		], done, function(arr){
+			assert.equal(arr[0].status, 0);
+			assert.equal(arr[0].signal, 0);
+			done();
+		});
+	});
 	after(function(done){
 		setTimeout(function(){
 			done();

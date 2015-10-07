@@ -110,7 +110,7 @@ describe('common tasks', function(){
 					assert.equal( fs.readFileSync('mnt/gcc', {encoding: 'utf8'}), 'Hello world!' );
 					done();
 				});
-			}, 300);
+			}, 500);
 		});
 	});
 });

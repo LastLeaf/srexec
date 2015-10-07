@@ -5,6 +5,7 @@ var cases = [
 	'queue',
 	'exec',
 	'code',
+	'extreme',
 ];
 
 if(process.getuid()) {

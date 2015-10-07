@@ -44,7 +44,7 @@ int cgroupCreateType(const char* cgid, const char* prefix, const char* type){
 	pid_t pid = getpid();
 	snprintf(path, sizeof(path), "%s/%s/%s/tasks", prefix, type, cgid);
 	FILE* fp = fopen(path, "we");
-	if(fp == NULL || fprintf(fp, "%d", pid) < 0) {
+	if(fp == NULL || fprintf(fp, "%d", pid) <= 0) {
 		if(fp != NULL) fclose(fp);
 		snprintf(path, sizeof(path), "%s/%s/%s", prefix, type, cgid);
 		rmdir(path);
