@@ -55,16 +55,20 @@ var execPipeline = function(id, srcFile, pipeline, done, cb){
 
 describe('wrong and extreme code', function(){
 	it('forever fork', function(done){
+		this.timeout(5000);
 		var id = 'extreme_fork';
 		var file = 'fork.c';
 		execPipeline(id, file, [
 			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
 			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 1000, totalTimeLimit: 1500, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
 		], done, function(arr){
-			//assert.equal(arr[1].status, 0);
-			//assert.equal(arr[1].signal, 0);
-			console.info(arr);
+			assert.equal(arr[1].err, 11);
 			done();
 		});
+	});
+	after(function(done){
+		setTimeout(function(){
+			done();
+		}, 1000);
 	});
 });

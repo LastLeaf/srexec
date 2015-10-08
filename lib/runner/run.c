@@ -228,6 +228,7 @@ int execChild(RunData* runData, RunResult* runResult){
 	if(fp == NULL) return -1;
 	if(fscanf(fp, "%lld", &memUsage)) {}
 	fclose(fp);
+	cgroupKill(runData->id);
 	fp = cgroupGetFile(runData->id, "freezer", "freezer.state", "w");
 	if(fp != NULL) {
 		fprintf(fp, "THAWED");
