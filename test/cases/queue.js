@@ -8,6 +8,7 @@ var url = require('url');
 var httpReq = function(method, reqUrl, content, done, cb){
 	var urlObj = url.parse(reqUrl);
 	urlObj.method = method;
+	urlObj.agent = false;
 	var req = http.request(urlObj, cb).on('error', done);
 	if(content !== undefined) req.write(content);
 	req.end();

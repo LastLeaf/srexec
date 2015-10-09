@@ -5,11 +5,27 @@ var assert = require('assert');
 var http = require('http');
 var url = require('url');
 
+var httpReq = function(method, reqUrl, content, done, cb){
+	var urlObj = url.parse(reqUrl);
+	urlObj.method = method;
+	urlObj.agent = false;
+	var req = http.request(urlObj, function(res){
+		var bufArr = [];
+		res.on('data', function(data){
+			bufArr.push(data);
+		});
+		res.on('end', function(){
+			res.body = Buffer.concat(bufArr).toString('utf8');
+			cb(res);
+		});
+	}).on('error', done);
+	if(content !== undefined) req.write(content);
+	req.end();
+};
+
 describe('visit storage', function(){
 	it('put file and exceed PUT body limit', function(done){
-		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file');
-		urlObj.method = 'PUT';
-		var req = http.request(urlObj, function(res){
+		httpReq('PUT', 'http://a:a@127.0.0.1:1180/test_dir/test_file', new Buffer(10485761), done, function(res){
 			assert.equal(res.statusCode, 413);
 			fs.stat('mnt/test_dir/test_file', function(err, stat){
 				assert.notEqual(err, null);
@@ -19,14 +35,10 @@ describe('visit storage', function(){
 					done();
 				});
 			});
-		}).on('error', done);
-		req.write(new Buffer(10485761));
-		req.end();
+		});
 	});
 	it('put file', function(done){
-		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file');
-		urlObj.method = 'PUT';
-		var req = http.request(urlObj, function(res){
+		httpReq('PUT', 'http://a:a@127.0.0.1:1180/test_dir/test_file', 'test file content', done, function(res){
 			assert.equal(res.statusCode, 200);
 			fs.stat('mnt/test_dir/test_file', function(err, stat){
 				assert.equal(err, null);
@@ -34,46 +46,28 @@ describe('visit storage', function(){
 				assert.equal(stat.gid, 0);
 				done();
 			});
-		}).on('error', done);
-		req.write('test file content');
-		req.end();
+		});
 	});
 	it('get file', function(done){
-		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file');
-		urlObj.method = 'GET';
-		var req = http.request(urlObj, function(res){
+		httpReq('GET', 'http://a:a@127.0.0.1:1180/test_dir/test_file', undefined, done, function(res){
 			assert.equal(res.statusCode, 200);
-			var bufArr = [];
-			res.on('data', function(data){
-				bufArr.push(data);
-			});
-			res.on('end', function(){
-				var str = Buffer.concat(bufArr).toString('utf8');
-				assert.equal(str, 'test file content');
-				done();
-			});
-		}).on('error', done);
-		req.end();
+			assert.equal(res.body, 'test file content');
+			done();
+		});
 	});
 	it('get file that does not exist', function(done){
-		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file_2');
-		urlObj.method = 'GET';
-		var req = http.request(urlObj, function(res){
+		httpReq('GET', 'http://a:a@127.0.0.1:1180/test_dir/test_file_2', undefined, done, function(res){
 			assert.equal(res.statusCode, 404);
 			done();
-		}).on('error', done);
-		req.end();
+		});
 	});
 	it('delete file', function(done){
-		var urlObj = url.parse('http://a:a@127.0.0.1:1180/test_dir/test_file');
-		urlObj.method = 'DELETE';
-		var req = http.request(urlObj, function(res){
+		httpReq('DELETE', 'http://a:a@127.0.0.1:1180/test_dir/test_file', undefined, done, function(res){
 			assert.equal(res.statusCode, 200);
 			fs.stat('mnt/test_dir/test_file', function(err, stat){
 				assert.notEqual(err, null);
 				done();
 			});
-		}).on('error', done);
-		req.end();
+		});
 	});
 });

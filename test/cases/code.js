@@ -8,6 +8,7 @@ var url = require('url');
 var httpReq = function(method, reqUrl, content, done, cb){
 	var urlObj = url.parse(reqUrl);
 	urlObj.method = method;
+	urlObj.agent = false;
 	var req = http.request(urlObj, function(res){
 		var bufArr = [];
 		res.on('data', function(data){
