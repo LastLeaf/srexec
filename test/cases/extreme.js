@@ -55,8 +55,56 @@ var execPipeline = function(id, srcFile, pipeline, done, cb){
 };
 
 describe('wrong and extreme code', function(){
+	it('time', function(done){
+		this.timeout(20000);
+		var id = 'extreme_time';
+		var file = 'time.c';
+		execPipeline(id, file, [
+			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 1000, totalTimeLimit: 3000, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+		], done, function(arr){
+			assert.equal(arr[1].err, 10);
+			done();
+		});
+	});
+	it('total time', function(done){
+		this.timeout(20000);
+		var id = 'extreme_sleep';
+		var file = 'sleep.c';
+		execPipeline(id, file, [
+			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 1000, totalTimeLimit: 3000, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+		], done, function(arr){
+			assert.equal(arr[1].err, 10);
+			done();
+		});
+	});
+	it('memory', function(done){
+		this.timeout(20000);
+		var id = 'extreme_memory';
+		var file = 'memory.c';
+		execPipeline(id, file, [
+			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 10000, totalTimeLimit: 15000, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+		], done, function(arr){
+			assert.equal(arr[1].err, 11);
+			done();
+		});
+	});
+	it('file size', function(done){
+		this.timeout(20000);
+		var id = 'extreme_output';
+		var file = 'output.c';
+		execPipeline(id, file, [
+			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 10000, totalTimeLimit: 15000, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+		], done, function(arr){
+			assert.equal(arr[1].err, 12);
+			done();
+		});
+	});
 	it('forever fork', function(done){
-		this.timeout(5000);
+		this.timeout(20000);
 		var id = 'extreme_fork';
 		var file = 'fork.c';
 		execPipeline(id, file, [

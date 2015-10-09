@@ -97,21 +97,4 @@ describe('common tasks', function(){
 			}, 100);
 		});
 	});
-	it('send code, compile, and execute', function(done){
-		var pipeline = [
-			{execPath: 'echo', args: ['#include <stdio.h>\nint main(){ printf("Hello world!"); return 0; }'], stdout: '/tmp/code.c'},
-			{execPath: 'gcc', args: ['-o', '/tmp/code', '/tmp/code.c'], stdin: '/dev/null', stdout: '/dev/null'},
-			{execPath: '/tmp/code', stdout: 'gcc'},
-		];
-		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/gcc', JSON.stringify(pipeline), done, function(res){
-			assert.equal(res.statusCode, 200);
-			setTimeout(function(){
-				httpReq('GET', 'http://a:a@127.0.0.1:1180/~/gcc', undefined, done, function(res){
-					assert.equal(res.statusCode, 200);
-					assert.equal( fs.readFileSync('mnt/gcc', {encoding: 'utf8'}), 'Hello world!' );
-					done();
-				});
-			}, 500);
-		});
-	});
 });

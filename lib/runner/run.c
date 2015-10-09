@@ -85,7 +85,11 @@ int applyLimits(RunData* runData){
 	fclose(fp);
 	fp = cgroupGetFile(runData->id, "devices", "devices.allow", "w");
 	if(fp == NULL) return -1;
-	fprintf(fp, "a 1:* rw");
+	fprintf(fp, "b 1:* rw");
+	fclose(fp);
+	fp = cgroupGetFile(runData->id, "devices", "devices.allow", "w");
+	if(fp == NULL) return -1;
+	fprintf(fp, "c 1:* rw");
 	fclose(fp);
 	// TODO limit network
 	// set limit: memory
@@ -114,7 +118,7 @@ int applyLimits(RunData* runData){
 	}
 	// set limit: cpu time
 	if(runData->timeLimit >= 0) {
-		rlim.rlim_cur = rlim.rlim_max = (runData->timeLimit-1)/1000 + 1;
+		rlim.rlim_cur = rlim.rlim_max = (runData->timeLimit-1)/1000 + 2;
 		if(setrlimit(RLIMIT_CPU, &rlim))
 			return -1;
 	}
