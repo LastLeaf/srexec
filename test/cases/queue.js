@@ -50,11 +50,11 @@ describe('pipeline queue', function(){
 		});
 	});
 	it('send pipeline request and exceed max queue length', function(done){
-		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.2"]}]', done, function(res){
+		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.5"]}]', done, function(res){
 			assert.equal(res.statusCode, 200);
-			httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.2"]}]', done, function(res){
-				httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.2"]}]', done, function(res){
-					httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.2"]}]', done, function(res){
+			httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.5"]}]', done, function(res){
+				httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.5"]}]', done, function(res){
+					httpReq('POST', 'http://a:a@127.0.0.1:1180/~/0', '[{"execPath":"sleep","args":["0.5"]}]', done, function(res){
 						assert.equal(res.statusCode, 503);
 						done();
 					});
