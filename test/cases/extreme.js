@@ -55,6 +55,22 @@ var execPipeline = function(id, srcFile, pipeline, done, cb){
 };
 
 describe('wrong and extreme code', function(){
+	var maxCorrectTime = 0;
+	var maxCorrectMem = 0;
+	it('a correct one', function(done){
+		var id = 'extreme_correct';
+		var file = 'correct.c';
+		execPipeline(id, file, [
+			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id},
+		], done, function(arr){
+			assert.equal(arr[1].status, 0);
+			assert.equal(arr[1].signal, 0);
+			maxCorrectTime = Math.round(arr[1].time * 2);
+			maxCorrectMem = Math.round(arr[1].mem * 1.1);
+			done();
+		});
+	});
 	it('time', function(done){
 		this.timeout(20000);
 		var id = 'extreme_time';
@@ -66,6 +82,37 @@ describe('wrong and extreme code', function(){
 			assert.equal(arr[1].err, 10);
 			done();
 		});
+	});
+	it('time (with a correct one)', function(done){
+		this.timeout(20000);
+		setTimeout(function(){
+			var doneLeft = 2;
+			var doneOne = function(){
+				if(--doneLeft) return;
+				done();
+			};
+			var id = 'extreme_time_p1';
+			var file = 'time.c';
+			execPipeline(id, file, [
+				{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+				{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 1000, totalTimeLimit: 3000, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+			], doneOne, function(arr){
+				assert.equal(arr[1].err, 10);
+				doneOne();
+			});
+			var id = 'extreme_time_p2';
+			var file = 'correct.c';
+			execPipeline(id, file, [
+				{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+				{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id},
+			], doneOne, function(arr){
+				assert.equal(arr[1].status, 0);
+				assert.equal(arr[1].signal, 0);
+				assert.equal(arr[1].time <= maxCorrectTime, true);
+				assert.equal(arr[1].mem <= maxCorrectMem, true);
+				doneOne();
+			});
+		}, 1000);
 	});
 	it('total time', function(done){
 		this.timeout(20000);
@@ -85,11 +132,42 @@ describe('wrong and extreme code', function(){
 		var file = 'memory.c';
 		execPipeline(id, file, [
 			{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
-			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 10000, totalTimeLimit: 15000, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+			{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 10000, totalTimeLimit: 15000, memLimit: 16*1024*1024, fileSizeLimit: 1024*1024},
 		], done, function(arr){
 			assert.equal(arr[1].err, 11);
 			done();
 		});
+	});
+	it('memory (with a correct one)', function(done){
+		this.timeout(20000);
+		setTimeout(function(){
+			var doneLeft = 2;
+			var doneOne = function(){
+				if(--doneLeft) return;
+				done();
+			};
+			var id = 'extreme_memory_p1';
+			var file = 'memory.c';
+			execPipeline(id, file, [
+				{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+				{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 10000, totalTimeLimit: 15000, memLimit: 16*1024*1024, fileSizeLimit: 1024*1024},
+			], doneOne, function(arr){
+				assert.equal(arr[1].err, 11);
+				doneOne();
+			});
+			var id = 'extreme_memory_p2';
+			var file = 'correct.c';
+			execPipeline(id, file, [
+				{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+				{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id},
+			], doneOne, function(arr){
+				assert.equal(arr[1].status, 0);
+				assert.equal(arr[1].signal, 0);
+				assert.equal(arr[1].time <= maxCorrectTime, true);
+				assert.equal(arr[1].mem <= maxCorrectMem, true);
+				doneOne();
+			});
+		}, 1000);
 	});
 	it('file size', function(done){
 		this.timeout(20000);
@@ -114,6 +192,37 @@ describe('wrong and extreme code', function(){
 			assert.equal(arr[1].err, 11);
 			done();
 		});
+	});
+	it('forever fork (with a correct one)', function(done){
+		this.timeout(20000);
+		setTimeout(function(){
+			var doneLeft = 2;
+			var doneOne = function(){
+				if(--doneLeft) return;
+				done();
+			};
+			var id = 'extreme_fork_p1';
+			var file = 'fork.c';
+			execPipeline(id, file, [
+				{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+				{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id, timeLimit: 1000, totalTimeLimit: 1500, memLimit: 64*1024*1024, fileSizeLimit: 1024*1024},
+			], doneOne, function(arr){
+				assert.equal(arr[1].err, 11);
+				doneOne();
+			});
+			var id = 'extreme_fork_p2';
+			var file = 'correct.c';
+			execPipeline(id, file, [
+				{execPath: 'gcc', args: ['-o', '/tmp/'+id, 'extreme/'+file]},
+				{execPath: '/tmp/'+id, workingDir: '/tmp', stdin: 'plus/stdin', stdout: id},
+			], doneOne, function(arr){
+				assert.equal(arr[1].status, 0);
+				assert.equal(arr[1].signal, 0);
+				assert.equal(arr[1].time <= maxCorrectTime, true);
+				assert.equal(arr[1].mem <= maxCorrectMem, true);
+				doneOne();
+			});
+		}, 1000);
 	});
 	after(function(done){
 		setTimeout(function(){

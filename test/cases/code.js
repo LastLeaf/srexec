@@ -28,7 +28,7 @@ var execPipeline = function(id, srcFile, pipeline, done, cb){
 		assert.equal(res.statusCode, 200);
 		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/'+id, JSON.stringify(pipeline), done, function(res){
 			assert.equal(res.statusCode, 200);
-			var waitUntil = Date.now() + 1500;
+			var waitUntil = Date.now() + 3000;
 			var checkRes = function(arr){
 				var str = fs.readFileSync('mnt/'+id, {encoding: 'utf8'});
 				assert.equal(str, '3\n');
@@ -64,6 +64,7 @@ describe('common a+b code', function(){
 		});
 	});
 	it('C', function(done){
+		this.timeout(5000);
 		var id = 'plus_c';
 		var file = 'src.c';
 		execPipeline(id, file, [
@@ -76,6 +77,7 @@ describe('common a+b code', function(){
 		});
 	});
 	it('C++', function(done){
+		this.timeout(5000);
 		var id = 'plus_cpp';
 		var file = 'src.cpp';
 		execPipeline(id, file, [
@@ -88,6 +90,7 @@ describe('common a+b code', function(){
 		});
 	});
 	it('JAVA', function(done){
+		this.timeout(5000);
 		var id = 'plus_java';
 		var file = 'Main.java';
 		execPipeline(id, file, [
@@ -100,6 +103,7 @@ describe('common a+b code', function(){
 		});
 	});
 	it('Node.js', function(done){
+		this.timeout(5000);
 		var id = 'plus_nodejs';
 		var file = 'src.js';
 		execPipeline(id, file, [
@@ -111,6 +115,7 @@ describe('common a+b code', function(){
 		});
 	});
 	it('Python', function(done){
+		this.timeout(5000);
 		var id = 'plus_py';
 		var file = 'src.py';
 		execPipeline(id, file, [
@@ -122,6 +127,7 @@ describe('common a+b code', function(){
 		});
 	});
 	it('Shell', function(done){
+		this.timeout(5000);
 		var id = 'plus_sh';
 		var file = 'src.sh';
 		execPipeline(id, file, [
