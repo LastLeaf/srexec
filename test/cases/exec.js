@@ -48,14 +48,28 @@ describe('common tasks', function(){
 	it('cat from stdin to stdout', function(done){
 		var pipeline = [
 			{stdin: 'echo'},
-			{stdout: 'cat'},
+			{stdout: 'test_dir/test_file'},
 		];
 		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/cat', JSON.stringify(pipeline), done, function(res){
 			assert.equal(res.statusCode, 200);
 			setTimeout(function(){
 				httpReq('GET', 'http://a:a@127.0.0.1:1180/~/cat', undefined, done, function(res){
 					assert.equal(res.statusCode, 200);
-					assert.equal( fs.readFileSync('mnt/cat', {encoding: 'utf8'}), 'file content...\n' );
+					assert.equal( fs.readFileSync('mnt/test_dir/test_file', {encoding: 'utf8'}), 'file content...\n' );
+					done();
+				});
+			}, 100);
+		});
+	});
+	it('special mnt', function(done){
+		var pipeline = [
+			{execPath: 'test', args: ['-f', 'test_file'], mnt: 'test_dir'},
+		];
+		httpReq('POST', 'http://a:a@127.0.0.1:1180/~/mnt', JSON.stringify(pipeline), done, function(res){
+			assert.equal(res.statusCode, 200);
+			setTimeout(function(){
+				httpReq('GET', 'http://a:a@127.0.0.1:1180/~/mnt', undefined, done, function(res){
+					assert.equal(JSON.parse(res.body).status, 0);
 					done();
 				});
 			}, 100);

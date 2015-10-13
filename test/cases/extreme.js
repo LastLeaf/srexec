@@ -182,7 +182,7 @@ describe('wrong and extreme code', function(){
 		});
 	});
 	it('forever fork', function(done){
-		this.timeout(20000);
+		this.timeout(60000);
 		var id = 'extreme_fork';
 		var file = 'fork.c';
 		execPipeline(id, file, [
@@ -194,7 +194,7 @@ describe('wrong and extreme code', function(){
 		});
 	});
 	it('forever fork (with a correct one)', function(done){
-		this.timeout(20000);
+		this.timeout(60000);
 		setTimeout(function(){
 			var doneLeft = 2;
 			var doneOne = function(){
